@@ -1,0 +1,13 @@
+C:\Users\User\Threading_Example\Threading_Example\bin\Debug\Threading_Example.exe.config
+C:\Users\User\Threading_Example\Threading_Example\bin\Debug\Threading_Example.exe
+C:\Users\User\Threading_Example\Threading_Example\bin\Debug\Threading_Example.pdb
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.csprojResolveAssemblyReference.cache
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\MainWindow.baml
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\MainWindow.g.cs
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\App.g.cs
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example_MarkupCompile.cache
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.g.resources
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.Properties.Resources.resources
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.csproj.GenerateResource.Cache
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.exe
+C:\Users\User\Threading_Example\Threading_Example\obj\Debug\Threading_Example.pdb
