@@ -58,6 +58,7 @@ namespace Threading_Example
             ScrapeBackgroundWorker.RunWorkerAsync(UrlTextBox.Text);
         }
 
+        //TODO: NOT WORKING
         /// <summary>
         /// Hitting enter key while in the text box automates clicking of the DownloadStringButton
         /// </summary>
@@ -65,7 +66,10 @@ namespace Threading_Example
         /// <param name="e"></param>
         private void UrlTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Enter)
+            {
+                DownloadStringButton_Click(sender, e);
+            }
         }
 
         /// <summary>
