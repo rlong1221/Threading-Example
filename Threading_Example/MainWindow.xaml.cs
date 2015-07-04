@@ -25,6 +25,50 @@ namespace Threading_Example
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortListButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DownloadStringButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UrlTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Clear URL text box on first use (click).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UrlTextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Clear URL text box on first use (click).
+            if (string.Compare(UrlTextBox.Text, "Enter URL") == 0)
+            {
+                UrlTextBox.Text = "";
+            }
+        }
+
 
     }
 }

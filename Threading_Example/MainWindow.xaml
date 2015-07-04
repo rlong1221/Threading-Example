@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Threading Example" Height="600" Width="800">
     <Grid>
-        <TextBox x:Name="UrlTextBox" HorizontalAlignment="Left" Height="25" Margin="400,10,0,0" TextWrapping="Wrap" Text="Enter URL" VerticalAlignment="Top" Width="380"/>
-        <Button x:Name="DownloadStringButton" Content="Go (download string from URL)" Height="25" HorizontalAlignment="Left" Margin="400,45,0,0" VerticalAlignment="Top" Width="380"/>
-        <Button x:Name="SortListButton" Content="Go (sort list)" Height="25" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Width="380" />
+        <TextBox x:Name="UrlTextBox" HorizontalAlignment="Left" Height="25" Margin="400,10,0,0" TextWrapping="Wrap" Text="Enter URL" VerticalAlignment="Top" Width="380" KeyDown="UrlTextBox_KeyDown" GotKeyboardFocus="UrlTextBox_GotKeyboardFocus"/>
+        <Button x:Name="DownloadStringButton" Content="Go (download string from URL)" Height="25" HorizontalAlignment="Left" Margin="400,45,0,0" VerticalAlignment="Top" Width="380" Click="DownloadStringButton_Click"/>
+        <Button x:Name="SortListButton" Content="Go (sort list)" Height="25" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Width="380" Click="SortListButton_Click" />
         <TextBox x:Name="SortedStringTextBox" HorizontalAlignment="Left" Height="475" Margin="10,85,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="380" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBox x:Name="DownloadedStringTextBox" HorizontalAlignment="Left" Height="475" Margin="400,85,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="380" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
     </Grid>
