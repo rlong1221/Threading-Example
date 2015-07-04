@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,11 +26,31 @@ namespace Threading_Example
     {
         private readonly BackgroundWorker ScrapeBackgroundWorker = new BackgroundWorker();
 
+        private List<int> list1;
+        private List<int> list2;
+        private List<int> list3;
+        private List<int> list4;
+        private List<int> list5;
+        private List<int> list6;
+        private List<int> list7;
+        private List<int> list8;
+
         public MainWindow()
         {
             InitializeComponent();
             // Initializes the background worker
             InitializeBackgroundWorker();
+
+            // Initialize lists of 1 million integers
+            var count = 1000000;
+            list1 = new List<int>(count);
+            list2 = new List<int>(count);
+            list3 = new List<int>(count);
+            list4 = new List<int>(count);
+            list5 = new List<int>(count);
+            list6 = new List<int>(count);
+            list7 = new List<int>(count);
+            list8 = new List<int>(count);
         }
 
         /// <summary>
@@ -39,11 +60,21 @@ namespace Threading_Example
         /// <param name="e"></param>
         private void SortListButton_Click(object sender, RoutedEventArgs e)
         {
+            SortedStringTextBox.Clear();
+            SortListButton.IsEnabled = false;
+            SortedStringTextBox.IsEnabled = false;
+            PopulateListsHelper();
+            SortThreadedSortListsHelper();
 
+            PopulateListsHelper();
+            MultiThreadedSortLists();
+
+            SortListButton.IsEnabled = true;
+            SortedStringTextBox.IsEnabled = true;
         }
 
         /// <summary>
-        /// Download button click - disable UI and run async task(s)
+        /// Download button click, disable UI, and run async task(s)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -141,6 +172,109 @@ namespace Threading_Example
             }
 
             return source;
+        }
+
+        /// <summary>
+        /// Populates a list with 1 million integers with random integers
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="count"></param>
+        private List<int> PopulateLists(List<int> list, int count)
+        {
+            var random = new Random();
+            list.Add(0);
+            for (var i = 1; i < count; i++)
+            {
+                list.Add(random.Next());
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// Clear the contents of all lists
+        /// </summary>
+        private void ClearLists()
+        {
+            list1.Clear();
+            list2.Clear();
+            list3.Clear();
+            list4.Clear();
+            list5.Clear();
+            list6.Clear();
+            list7.Clear();
+            list8.Clear();
+        }
+
+        /// <summary>
+        /// Aids in single threaded lists sort
+        /// </summary>
+        private void SortThreadedSortListsHelper()
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var task = Task.Factory.StartNew(() => SingleThreadedSortLists());
+            Task.WaitAll(task);
+            stopWatch.Stop();
+
+            SortedStringTextBox.AppendText("Single-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms" + "\n");
+        }
+
+        /// <summary>
+        /// Sort lists with one thread
+        /// </summary>
+        private void SingleThreadedSortLists()
+        {
+            var sorted = false;
+            while (!sorted)
+            {
+                list1.Sort();
+                list2.Sort();
+                list3.Sort();
+                list4.Sort();
+                list5.Sort();
+                list6.Sort();
+                list7.Sort();
+                list8.Sort();
+                sorted = true;
+            }
+            ClearLists();
+        }
+
+        /// <summary>
+        /// Multi-threaded sort of lists using task
+        /// </summary>
+        private void MultiThreadedSortLists()
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var t1 = Task.Factory.StartNew(() => list1.Sort());
+            var t2 = Task.Factory.StartNew(() => list1.Sort());
+            var t3 = Task.Factory.StartNew(() => list1.Sort());
+            var t4 = Task.Factory.StartNew(() => list1.Sort());
+            var t5 = Task.Factory.StartNew(() => list1.Sort());
+            var t6 = Task.Factory.StartNew(() => list1.Sort());
+            var t7 = Task.Factory.StartNew(() => list1.Sort());
+            var t8 = Task.Factory.StartNew(() => list1.Sort());
+            Task.WaitAll(t1, t2, t3, t4, t5, t6, t7, t8);
+            stopWatch.Stop();
+            SortedStringTextBox.AppendText("Multi-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms\n");
+            ClearLists();
+        }
+
+        /// <summary>
+        /// Aids in populating all lists
+        /// </summary>
+        private void PopulateListsHelper()
+        {
+            var count = 1000000;
+            list1 = PopulateLists(list1, count);
+            list2 = PopulateLists(list2, count);
+            list3 = PopulateLists(list3, count);
+            list4 = PopulateLists(list4, count);
+            list5 = PopulateLists(list5, count);
+            list6 = PopulateLists(list6, count);
+            list7 = PopulateLists(list7, count);
+            list8 = PopulateLists(list8, count);
         }
     }
 }
