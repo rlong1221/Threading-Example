@@ -3,19 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Threading_Example
 {
@@ -24,7 +15,8 @@ namespace Threading_Example
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly BackgroundWorker ScrapeBackgroundWorker = new BackgroundWorker();
+        private readonly BackgroundWorker _scrapeBackgroundWorker = new BackgroundWorker();
+        private readonly BackgroundWorker _sortBackgroundWorker = new BackgroundWorker();
 
         private List<int> list1;
         private List<int> list2;
@@ -38,8 +30,8 @@ namespace Threading_Example
         public MainWindow()
         {
             InitializeComponent();
-            // Initializes the background worker
-            InitializeBackgroundWorker();
+            // Initializes the scrape background worker
+            InitializeScrapeBackgroundWorker();
 
             // Initialize lists of 1 million integers
             var count = 1000000;
@@ -51,26 +43,10 @@ namespace Threading_Example
             list6 = new List<int>(count);
             list7 = new List<int>(count);
             list8 = new List<int>(count);
-        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SortListButton_Click(object sender, RoutedEventArgs e)
-        {
-            SortedStringTextBox.Clear();
-            SortListButton.IsEnabled = false;
-            SortedStringTextBox.IsEnabled = false;
-            PopulateListsHelper();
-            SortThreadedSortListsHelper();
+            // Initialize the sort background worker
+            InitializeSortBackgroundWorker();
 
-            PopulateListsHelper();
-            MultiThreadedSortLists();
-
-            SortListButton.IsEnabled = true;
-            SortedStringTextBox.IsEnabled = true;
         }
 
         /// <summary>
@@ -86,7 +62,7 @@ namespace Threading_Example
             DownloadedStringTextBox.IsEnabled = false;
 
             // Run BackgroundWorker to scrape asynchronously.
-            ScrapeBackgroundWorker.RunWorkerAsync(UrlTextBox.Text);
+            _scrapeBackgroundWorker.RunWorkerAsync(UrlTextBox.Text);
         }
 
         //TODO: NOT WORKING
@@ -120,11 +96,11 @@ namespace Threading_Example
         /// <summary>
         /// Initialize the background worker.
         /// </summary>
-        private void InitializeBackgroundWorker()
+        private void InitializeScrapeBackgroundWorker()
         {
             // Subscribe to DoWork and Completed events
-            ScrapeBackgroundWorker.DoWork += new DoWorkEventHandler(ScrapeBackgroundWorker_DoWork);
-            ScrapeBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ScrapeBackgroundWorker_RunWorkerCompleted);
+            _scrapeBackgroundWorker.DoWork += new DoWorkEventHandler(ScrapeBackgroundWorker_DoWork);
+            _scrapeBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ScrapeBackgroundWorker_RunWorkerCompleted);
         }
 
         /// <summary>
@@ -175,6 +151,61 @@ namespace Threading_Example
         }
 
         /// <summary>
+        /// Disable benchmark textbox and sort button, populate lists, and sort
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortListButton_Click(object sender, RoutedEventArgs e)
+        {
+            SortedStringTextBox.Clear();
+            SortListButton.IsEnabled = false;
+            SortedStringTextBox.IsEnabled = false;
+
+            // Run BackgroundWorker to populate and sort asynchronously.
+            _sortBackgroundWorker.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Initialize the background worker.
+        /// </summary>
+        private void InitializeSortBackgroundWorker()
+        {
+            // Subscribe to DoWork and Completed events
+            _sortBackgroundWorker.DoWork += new DoWorkEventHandler(SortBackgroundWorker_DoWork);
+            _sortBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(SortBackgroundWorker_RunWorkerCompleted);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var task = Task.Factory.StartNew(() => PopulateListsHelper());
+            Task.WaitAll(task);
+            var text = SingleThreadedSortListsHelper();
+
+            task = Task.Factory.StartNew(() => PopulateListsHelper());
+            Task.WaitAll(task);
+            e.Result = text + MultiThreadedSortLists();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SortedStringTextBox.Text = e.Result.ToString();
+
+            // Enable output textbox and sort button when complete
+            SortListButton.IsEnabled = true;
+            SortedStringTextBox.IsEnabled = true;
+        }
+
+        /// <summary>
         /// Populates a list with 1 million integers with random integers
         /// </summary>
         /// <param name="list"></param>
@@ -208,15 +239,18 @@ namespace Threading_Example
         /// <summary>
         /// Aids in single threaded lists sort
         /// </summary>
-        private void SortThreadedSortListsHelper()
+        private String SingleThreadedSortListsHelper()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             var task = Task.Factory.StartNew(() => SingleThreadedSortLists());
             Task.WaitAll(task);
             stopWatch.Stop();
+            
+            var text = "Single-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms" + "\n";
+            return text;
 
-            SortedStringTextBox.AppendText("Single-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms" + "\n");
+            //SortedStringTextBox.AppendText("Single-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms" + "\n");
         }
 
         /// <summary>
@@ -243,7 +277,7 @@ namespace Threading_Example
         /// <summary>
         /// Multi-threaded sort of lists using task
         /// </summary>
-        private void MultiThreadedSortLists()
+        private String MultiThreadedSortLists()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -257,8 +291,10 @@ namespace Threading_Example
             var t8 = Task.Factory.StartNew(() => list1.Sort());
             Task.WaitAll(t1, t2, t3, t4, t5, t6, t7, t8);
             stopWatch.Stop();
-            SortedStringTextBox.AppendText("Multi-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms\n");
-            ClearLists();
+            var text = "Multi-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms\n";
+            return text;
+            //SortedStringTextBox.AppendText("Multi-threaded Elapsed Time: " + stopWatch.ElapsedMilliseconds + "ms\n");
+            //ClearLists();
         }
 
         /// <summary>
@@ -267,6 +303,7 @@ namespace Threading_Example
         private void PopulateListsHelper()
         {
             var count = 1000000;
+
             list1 = PopulateLists(list1, count);
             list2 = PopulateLists(list2, count);
             list3 = PopulateLists(list3, count);
